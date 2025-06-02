@@ -1,9 +1,11 @@
 package org.scalaproject001.application
 
-import org.apache.spark.sql.{SparkSession, DataFrame}
+
+import org.apache.spark.sql.{DataFrame, SparkSession}
 import org.apache.log4j.{Level, Logger}
 import org.apache.spark.rdd.RDD
 import org.scalaproject001.config.AppConfig
+
 
 //Refer to src/main/resources/application.conf to hard code the file paths and the integer for the top X items.
 
@@ -19,9 +21,9 @@ object TopXDetectedItems {
 
     val settings = AppConfig.settings
     val inputDetectionsPath = settings.inputDetections
-    val inputLocationsPath  = settings.inputLocations
-    val outputPath          = settings.output
-    val topX                = settings.topX
+    val inputLocationsPath = settings.inputLocations
+    val outputPath = settings.output
+    val topX = settings.topX
 
     val detectionsDf = spark.read.parquet(inputDetectionsPath)
     val locationsDf = spark.read.parquet(inputLocationsPath)
@@ -52,6 +54,7 @@ object TopXDetectedItems {
                                   spark: SparkSession,
                                   logger: Logger
                                 ): DataFrame = {
+
     import spark.implicits._
 
     val locationMap = locationsDf
@@ -92,4 +95,5 @@ object TopXDetectedItems {
 
     finalRdd.toDF("geographical_location", "item_rank", "item_name")
   }
+
 }

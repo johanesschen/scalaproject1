@@ -3,8 +3,7 @@ ThisBuild / scalaVersion := "2.12.18"
 
 lazy val root = (project in file("."))
   .settings(
-    name := "scalaproject001",
-    idePackagePrefix := Some("org.scalaproject001.application")
+    name := "scalaproject001"
   )
 
 libraryDependencies ++= Seq(
@@ -16,9 +15,5 @@ libraryDependencies ++= Seq(
 )
 
 Test / fork := true
-
 Test / javaOptions += "--add-exports=java.base/sun.nio.ch=ALL-UNNAMED"
-
-Test / classLoaderLayeringStrategy := ClassLoaderLayeringStrategy.Flat
-
 Test / javaOptions += "--add-exports=java.base/sun.security.action=ALL-UNNAMED"

@@ -1,0 +1,64 @@
+Design Considerations and Spark Configuration – TopXDetectedItems
+
+1. Modular and Reusable Design
+Separation of Concerns:
+
+We separated business logic into two main reusable functions:
+deduplicateDetections(detectionsDf: DataFrame): RDD[(Long, String)]
+computeTopItemsPerLocation(...): processes deduplicated data to return a ranked DataFrame.
+This ensures that both components can be reused independently or adapted to other specs.
+
+Extendability via Design Patterns:
+We followed the Strategy Pattern principle to make the aggregation logic (computeTopItemsPerLocation) interchangeable.
+For example, a similar function computeMostRecentItemsPerLocation could be implemented without changing the data loading or deduplication logic.
+This allows the main pipeline to be reused with minimal changes.
+
+2. Avoiding Explicit .join()
+We avoided .join() altogether by:
+Collecting the locationsDf as a local Map and broadcasting it with spark.sparkContext.broadcast(...)
+Using RDD.map transformations to attach location names.
+This avoids expensive shuffle operations that typically accompany .join().
+
+3. Time and Space Complexity Optimization
+
+deduplicateDetections:
+Performs a .reduceByKey() (which is shuffling, but necessary), followed by a .map
+This is more efficient than using groupBy or converting back to DataFrame.
+
+computeTopItemsPerLocation:
+Uses .reduceByKey() and .groupByKey() which are optimized for RDDs.
+.groupByKey() is carefully used after reducing, so the grouped data is small and manageable.
+
+Sorting and taking top K happens on a per-group basis (.mapValues), keeping memory usage local to each partition.
+
+Broadcast Join (instead of shuffle join):
+locationsDf is collected as a Map and broadcasted.
+Greatly reduces shuffle cost compared to .join.
+
+4. Spark Configuration (Tested with Local Mode)
+In production or distributed deployment, we recommend the following configurations:
+
+val spark = SparkSession.builder()
+  .appName("Top X Detected Items Per Location")
+  .config("spark.sql.shuffle.partitions", "8")  // reduce shuffle partitions for small-medium data
+  .config("spark.executor.memory", "2g")         // adjust based on workload
+  .config("spark.driver.memory", "1g")           // driver memory
+  .config("spark.serializer", "org.apache.spark.serializer.KryoSerializer") // faster serialization
+  .master("local[*]")
+  .getOrCreate()
+
+spark.sql.shuffle.partitions: reduced from default 200 to 8 for testing and better performance on small datasets.
+Kryo serializer: improves performance for RDD-based transformations.
+Executor/Driver memory: tune depending on deployment scale.
+
+5. Scalability Considerations
+
+Code is designed to be scalable:
+RDD operations allow for fine-grained control over partitions.
+Broadcast variables reduce network traffic.
+Stateless logic encourages parallelism.
+
+6. Testability
+
+All business logic functions (deduplicateDetections, computeTopItemsPerLocation) are tested independently in unit tests.
+Integration test simulates end-to-end flow using temp directories, ensuring that the pipeline runs correctly without actual deployment.

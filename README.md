@@ -132,3 +132,9 @@ src/
 target/             ← SBT build output (SHOULD be gitignored)
 build.sbt           ← main build configuration
 .gitignore          ← include temp & auto-generated files
+
+
+----------------
+
+Before this code can be deployed to Production, please note that there is a vulnerable CVE related to the use of log4j 1.2.17 which has to be resolved before deployment. 
+Either the related code can be removed, or the log4j version used can be of a higher version where the vulnerability is already addressed. 

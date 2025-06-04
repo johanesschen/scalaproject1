@@ -31,8 +31,11 @@ Download SBT and ensure that it is added to path so that we are able to call it 
 Other Notes: 
 
 Task 1 Point 3: Please note that the file paths are coded in the application.conf file 
+
 Task 1 Scoring criteria b regarding integration and unit tests: Refer to src/test/scala and check TopXDetectedItemsTest and TopXIntegrationTest
+
 Task 1 Scoring criteria g: Refer to the file 'Design Considerations'
+
 Task 2 Point 1: Refer to Salting_CodeSnippet for the code snippet requested. 
 
 ---------------------
@@ -79,6 +82,7 @@ A Parquet file is a columnar storage format commonly used in big data processing
 Apache Parquet is a file format designed for efficient data storage and retrieval. It stores data column-by-column, rather than row-by-row like CSV or JSON.
 
 Why is Scala commonly used with Apache Spark?
+
 ✅ 1.1. Spark is written in Scala
 Apache Spark is natively implemented in Scala.
 All core Spark APIs were first designed in Scala.

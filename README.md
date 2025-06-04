@@ -121,7 +121,7 @@ GraphX
 Custom UDFs
 You can write custom extensions or connectors more easily in Scala.
 
-SBT expects this structure:
+SBT expects this structure: (view using Code instead of Preview if viewing in github)
 
 project/
   build.properties
